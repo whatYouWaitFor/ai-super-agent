@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: ai-super-agent
+  ai:
+#    chat:
+#      client:
+#        enabled: false
+    # ????????token????openAi??????qwen
+    openai:
+      api-key: sk-784a90444d774d82a159216f78ca773c
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      chat:
+        options:
+          model: qwen3.5-plus
+#    dashscope:
+#      chat:
+#        options:
+#          model: qwen-plus
+
+  profiles:
+    active: local
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# springdoc-openapi????
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.greg.aisuperagent.controller
+# knife4j???????????????
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    #org.springframework.web.client: debug
+    #com.alibaba.cloud.ai.dashscope: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
