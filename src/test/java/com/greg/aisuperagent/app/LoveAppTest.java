@@ -45,4 +45,32 @@ class LoveAppTest {
         LoveApp.LoveReport loveReport = loveApp.doChatWithReport(message, chatId);
         System.out.println(loveReport);
     }
+
+    @Test
+    void doChatWithRag() {
+        String chatId = UUID.randomUUID().toString();
+        // 第一轮对话
+        String message = "我已经结婚了，但是最近产生了矛盾，给我点建议";
+        String content = loveApp.doChatWithRag(message, chatId);
+        System.out.println( content);
+    }
+
+    @Test
+    void doChatWithRagCloud() {
+        String chatId = UUID.randomUUID().toString();
+        // 第一轮对话
+        String message = "我已经结婚了，但是最近产生了矛盾，给我点建议";
+        String content = loveApp.doChatWithRag(message, chatId);
+        System.out.println( content);
+    }
+
+    @Test
+    void testDoChatWithRagCloud() {
+        String chatId = UUID.randomUUID().toString();
+        // 第一轮对话
+        String message = "我和老婆吵架了，应该怎么解决矛盾";
+        String content = loveApp.doChatWithRagCloud(message, chatId);
+    }
+
+
 }

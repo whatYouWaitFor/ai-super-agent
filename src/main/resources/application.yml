@@ -2,23 +2,35 @@ spring:
   application:
     name: ai-super-agent
   ai:
-#    chat:
-#      client:
-#        enabled: false
+    chat:
+      client:
+        enabled: false
     # ????????token????openAi??????qwen
     openai:
-      api-key: sk-784a90444d774d82a159216f78ca773c
+      api-key: { your api-key }
       base-url: https://dashscope.aliyuncs.com/compatible-mode
       chat:
         options:
           model: qwen3.5-plus
-#    dashscope:
-#      chat:
-#        options:
-#          model: qwen-plus
+      embedding:
+        api-key: { your api-key }
+        base-url: https://dashscope.aliyuncs.com/compatible-mode
+        options:
+          model: text-embedding-v4
+          dimensions: 1536
+    dashscope:
+      chat:
+        options:
+          model: qwen-plus
+
 
   profiles:
     active: local
+
+  datasource:
+    url: jdbc:postgresql://rm-cn-5y44s1zdo0002w8o.rwlb.rds.aliyuncs.com:5432/ai_agent
+    username: my_root
+    password: {your password}
 
 server:
   port: 8080
