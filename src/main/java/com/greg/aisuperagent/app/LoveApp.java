@@ -13,6 +13,8 @@ import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
@@ -111,7 +113,7 @@ public class LoveApp {
         return loveReport;
     }
 
-    @Resource
+    //@Resource
     private VectorStore vectorStore;
 
     @Resource
@@ -163,12 +165,46 @@ public class LoveApp {
         return text;
     }
 
+    @Resource
+    private ToolCallback[] allTools;
+
+    /**
+     * 使用工具
+     * @param message
+     * @param chatId
+     * @return
+     */
     public String doChatWithTool(String message, String chatId) {
         ChatResponse chatResponse = openAiChatClient.prompt()
-                .system(SYSTEM_PROMPT + "每次对话后都要生成恋爱结果，标题为{用户名}的恋爱报告，内容为建议列表")
                 .user(message)
                 .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
-                .advisors(loveAppRagCloudAdvisor)
+                .advisors(new MyLoggerAdvisor())
+                .toolCallbacks(allTools)
+                .call()
+                .chatResponse();
+        String text = chatResponse.getResult().getOutput().getText();
+        return text;
+    }
+
+    @Resource
+    private ToolCallbackProvider mcpToolCallbacks;
+
+    //@Resource
+    //private List<McpSyncClient> mcpSyncClients;
+
+    /**
+     * 使用MCP
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public String doChatWithMcp(String message, String chatId) {
+        ChatResponse chatResponse = openAiChatClient.prompt()
+                .user(message)
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .advisors(new MyLoggerAdvisor())
+                //.tools(mcpSyncClients)
+                .toolCallbacks(mcpToolCallbacks)
                 .call()
                 .chatResponse();
         String text = chatResponse.getResult().getOutput().getText();

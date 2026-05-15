@@ -11,7 +11,7 @@ spring:
       base-url: https://dashscope.aliyuncs.com/compatible-mode
       chat:
         options:
-          model: qwen3.5-plus
+          model: qwen3.5-plus-2026-02-15
       embedding:
         api-key: { your api-key }
         base-url: https://dashscope.aliyuncs.com/compatible-mode
@@ -22,7 +22,15 @@ spring:
       chat:
         options:
           model: qwen-plus
-
+    mcp:
+      client:
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
+#        sse:
+#          connections:
+#            server1:
+#              url: http://localhost:8127
+        request-timeout: 20s
 
   profiles:
     active: local
@@ -54,6 +62,11 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+# searchApi
+search-api:
+  api-key: {你的api-key}
+
 
 logging:
   level:
