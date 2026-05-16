@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
  * AI超级智能体（拥有自己规划能力）
  */
 @Component
-public class myManus extends ToolCallAgent {
+public class MyManus extends ToolCallAgent {
 
-    public myManus(ToolCallback[] allTools, ChatModel openAiChatModel) {
+    public MyManus(ToolCallback[] allTools, ChatModel openAiChatModel) {
         super(allTools);
         this.setName("myManus");
         String SYSTEM_PROMPT = """
