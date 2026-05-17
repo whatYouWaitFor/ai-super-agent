@@ -2,6 +2,7 @@
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchLoveAppChat } from '../api/ai.js'
+//import { fetchLoveAppChat } from '../api/mockAi.js'
 
 const router = useRouter()
 const messages = ref([])
@@ -34,8 +35,8 @@ async function sendMessage() {
   inputMessage.value = ''
   isLoading.value = true
 
-  const aiMessage = { role: 'ai', content: '' }
-  messages.value.push(aiMessage)
+  const aiIndex = messages.value.length
+  messages.value.push({ role: 'ai', content: '' })
   scrollToBottom()
 
   try {
@@ -45,12 +46,12 @@ async function sendMessage() {
         return
       }
       if (chunk) {
-        aiMessage.content += chunk
+        messages.value[aiIndex].content += chunk
         scrollToBottom()
       }
     })
   } catch (error) {
-    aiMessage.content += '\n\n❌ 请求失败，请稍后重试'
+    messages.value[aiIndex].content += '\n\n❌ 请求失败，请稍后重试'
     isLoading.value = false
   }
 }

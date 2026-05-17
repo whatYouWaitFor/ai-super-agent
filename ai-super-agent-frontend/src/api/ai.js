@@ -1,4 +1,4 @@
-const API_BASE = '/api'
+const API_BASE = 'http://localhost:8080/api'
 
 export function fetchLoveAppChat(message, chatId, onChunk) {
   const url = `${API_BASE}/ai/loveApp/chat?message=${encodeURIComponent(message)}&chatId=${encodeURIComponent(chatId)}`
