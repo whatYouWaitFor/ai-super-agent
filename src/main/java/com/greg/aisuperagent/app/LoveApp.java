@@ -108,7 +108,6 @@ public class LoveApp {
                 .content();
     }
 
-
     record LoveReport(String title, List<String> suggestion){};
 
     /**
