@@ -5,13 +5,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class myManusTest {
 
     @Resource
-    private myManus myManus;
+    private MyManus myManus;
     @Test
     void run(){
         String userMessage = """

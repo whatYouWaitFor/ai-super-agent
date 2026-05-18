@@ -2,7 +2,12 @@
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchLoveAppChat } from '../api/ai.js'
-//import { fetchLoveAppChat } from '../api/mockAi.js'
+import { useSeo } from '../composables/useSeo.js'
+
+useSeo({
+  title: 'AI 恋爱大师',
+  description: 'AI 恋爱大师，专业的 AI 情感咨询助手，帮你解决恋爱困惑、分析情感问题，提供贴心的恋爱建议和情感支持。',
+})
 
 const router = useRouter()
 const messages = ref([])
@@ -69,38 +74,50 @@ function goHome() {
 </script>
 
 <template>
-  <div class="chat-page love-app">
-    <div class="chat-header">
-      <button class="back-btn" @click="goHome">← 返回</button>
-      <h1>💕 AI 恋爱大师</h1>
-      <span class="chat-id">会话: {{ chatId.slice(-8) }}</span>
-    </div>
-    <div class="chat-container" ref="chatContainer">
+  <div class="chat-page">
+    <header class="chat-header">
+      <button class="back-btn" @click="goHome" aria-label="返回首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="header-center">
+        <span class="header-icon">💕</span>
+        <h1>AI 恋爱大师</h1>
+      </div>
+      <span class="chat-badge">#{{ chatId.slice(-8) }}</span>
+    </header>
+
+    <main class="chat-body" ref="chatContainer">
       <div v-if="messages.length === 0" class="empty-state">
         <div class="empty-icon">💕</div>
-        <p>你好！我是 AI 恋爱大师，有什么情感问题都可以问我～</p>
+        <h2>你好，我是 AI 恋爱大师</h2>
+        <p>有什么情感问题都可以和我聊聊，这里是你安全的树洞～</p>
       </div>
+
       <div
         v-for="(msg, index) in messages"
         :key="index"
-        :class="['message', msg.role === 'user' ? 'message-user' : 'message-ai']"
+        :class="['message-row', msg.role === 'user' ? 'row-user' : 'row-ai']"
       >
-        <div class="message-avatar">
-          {{ msg.role === 'user' ? '🧑' : '💕' }}
-        </div>
-        <div class="message-content">
-          <div class="message-bubble">{{ msg.content }}</div>
+        <div class="msg-avatar">{{ msg.role === 'user' ? '🧑' : '💕' }}</div>
+        <div class="msg-body">
+          <div class="msg-bubble">{{ msg.content }}</div>
         </div>
       </div>
-      <div v-if="isLoading && messages[messages.length - 1]?.content === ''" class="message message-ai">
-        <div class="message-avatar">💕</div>
-        <div class="message-content">
-          <div class="message-bubble typing">思考中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+
+      <div v-if="isLoading && messages[messages.length - 1]?.content === ''" class="message-row row-ai">
+        <div class="msg-avatar">💕</div>
+        <div class="msg-body">
+          <div class="msg-bubble typing">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="chat-input-area">
-      <div class="input-wrapper">
+    </main>
+
+    <footer class="chat-footer">
+      <div class="input-box">
         <textarea
           v-model="inputMessage"
           @keydown="handleKeydown"
@@ -108,17 +125,23 @@ function goHome() {
           rows="1"
           :disabled="isLoading"
         ></textarea>
-        <button class="send-btn" @click="sendMessage" :disabled="isLoading || !inputMessage.trim()">
-          发送
+        <button
+          class="send-btn"
+          @click="sendMessage"
+          :disabled="isLoading || !inputMessage.trim()"
+          aria-label="发送消息"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-    </div>
+    </footer>
   </div>
 </template>
 
 <style scoped>
 .chat-page {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #fef7f0;
@@ -127,46 +150,64 @@ function goHome() {
 .chat-header {
   display: flex;
   align-items: center;
-  padding: 16px 24px;
+  padding: 14px 20px;
   background: linear-gradient(135deg, #ff6b9d, #ff8a80);
   color: #fff;
-  gap: 16px;
+  gap: 14px;
   flex-shrink: 0;
-}
-
-.chat-header h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  flex: 1;
-}
-
-.chat-id {
-  font-size: 0.75rem;
-  opacity: 0.8;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px 10px;
-  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(255, 107, 157, 0.25);
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
   border: none;
   color: #fff;
-  padding: 6px 14px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.chat-container {
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.header-icon {
+  font-size: 1.3rem;
+}
+
+.chat-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.chat-badge {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.chat-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px;
+  padding: 20px;
+  scroll-behavior: smooth;
 }
 
 .empty-state {
@@ -175,139 +216,216 @@ function goHome() {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #999;
+  text-align: center;
+  padding: 20px;
 }
 
 .empty-icon {
   font-size: 4rem;
   margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.empty-state h2 {
+  font-size: 1.2rem;
+  color: var(--color-text);
+  margin-bottom: 8px;
 }
 
 .empty-state p {
-  font-size: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  max-width: 280px;
 }
 
-.message {
+.message-row {
   display: flex;
-  margin-bottom: 20px;
-  gap: 12px;
+  margin-bottom: 18px;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
 }
 
-.message-user {
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.row-user {
   flex-direction: row-reverse;
 }
 
-.message-avatar {
-  width: 40px;
-  height: 40px;
+.msg-avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
-.message-content {
-  max-width: 70%;
+.msg-body {
+  max-width: 72%;
+  min-width: 0;
 }
 
-.message-bubble {
-  padding: 12px 18px;
-  border-radius: 18px;
-  line-height: 1.6;
-  font-size: 0.95rem;
+.msg-bubble {
+  padding: 11px 16px;
+  border-radius: var(--radius-xl);
+  line-height: 1.65;
+  font-size: 0.92rem;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.message-user .message-bubble {
+.row-user .msg-bubble {
   background: linear-gradient(135deg, #ff6b9d, #ff8a80);
   color: #fff;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 6px;
 }
 
-.message-ai .message-bubble {
+.row-ai .msg-bubble {
   background: #fff;
   color: #333;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-bottom-left-radius: 6px;
+  box-shadow: var(--shadow-sm);
 }
 
-.typing .dot {
-  animation: blink 1.4s infinite both;
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px;
 }
 
-.typing .dot:nth-child(2) {
-  animation-delay: 0.2s;
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ccc;
+  animation: dotPulse 1.4s infinite both;
 }
 
-.typing .dot:nth-child(3) {
-  animation-delay: 0.4s;
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
 }
 
-@keyframes blink {
-  0%, 80%, 100% {
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-}
-
-.chat-input-area {
-  padding: 16px 24px;
+.chat-footer {
+  padding: 14px 20px;
   background: #fff;
   border-top: 1px solid #f0e8e0;
   flex-shrink: 0;
 }
 
-.input-wrapper {
+.input-box {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-end;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.input-wrapper textarea {
+.input-box textarea {
   flex: 1;
-  padding: 12px 16px;
+  padding: 11px 16px;
   border: 2px solid #f0e8e0;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: var(--radius-xl);
+  font-size: 0.92rem;
   resize: none;
   outline: none;
   font-family: inherit;
   line-height: 1.5;
   max-height: 120px;
   transition: border-color 0.2s;
+  background: #fefaf7;
 }
 
-.input-wrapper textarea:focus {
+.input-box textarea:focus {
   border-color: #ff6b9d;
+  background: #fff;
 }
 
 .send-btn {
-  padding: 12px 24px;
+  width: 42px;
+  height: 42px;
   background: linear-gradient(135deg, #ff6b9d, #ff8a80);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s;
-  font-weight: 600;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .send-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(255, 107, 157, 0.4);
 }
 
 .send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .chat-header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .chat-header h1 {
+    font-size: 1rem;
+  }
+
+  .chat-badge {
+    display: none;
+  }
+
+  .chat-body {
+    padding: 14px 12px;
+  }
+
+  .msg-body {
+    max-width: 82%;
+  }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+
+  .chat-footer {
+    padding: 12px 14px;
+  }
+
+  .input-box textarea {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chat-body {
+    padding: 24px calc((100% - 800px) / 2 + 20px);
+  }
+
+  .chat-footer {
+    padding: 16px calc((100% - 800px) / 2 + 20px);
+  }
 }
 </style>
